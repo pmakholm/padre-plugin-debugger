@@ -34,15 +34,19 @@ sub menu_plugins_simple {
     my $self = shift;
     return $self->plugin_name => [
         "About" => sub { $self->show_about },
-        "Run debugger" => sub { $self->start_debugger },
+        "Start debugger" => sub { $self->start_debugger },
         "Stop debugger" => sub { $self->stop_debugger },
-        "Continue\tShift+Alt+C" => sub { $self->debug_continue },
-        "Step\tShift+Alt+S" => sub { $self->debug_step },
-        "Next\tShift+Alt+N" => sub { $self->debug_next },
-        "Return\tShift+Alt+R" => sub { $self->debug_return },
-        "Eval\tShift+Alt+E" => sub { $self->debug_eval },
-        "Breakpoint\tShift+Alt+B" => sub { $self->debug_breakpoint },
-        "Breakpoint (conditional)\tCtrl+Shift+Alt+B" => sub { $self->debug_breakpoint_cond },
+        "Running code..." => [
+            "Continue\tShift+Alt+C" => sub { $self->debug_continue },
+            "Step\tShift+Alt+S" => sub { $self->debug_step },
+            "Next\tShift+Alt+N" => sub { $self->debug_next },
+            "Return\tShift+Alt+R" => sub { $self->debug_return },
+        ],
+        "Breakpoint/Watches..." => [
+            "Breakpoint\tShift+Alt+B" => sub { $self->debug_breakpoint },
+            "Breakpoint (conditional)\tCtrl+Shift+Alt+B" => sub { $self->debug_breakpoint_cond },
+        ],
+        "Evaluate expression\tShift+Alt+E" => sub { $self->debug_eval },
     ]
 }
 
