@@ -219,7 +219,6 @@ sub debug_breakpoint_cond {
 
 # Internal functions
 
-sub MarkCurrent { 42 };
 sub MarkBreakPoint { 17 }
 
 sub mark_current_line {
@@ -230,13 +229,6 @@ sub mark_current_line {
     my $syntax = Padre->ide->wx->main->syntax;
 
     $editor->goto_line_centerize($line);
-
-    $syntax->clear;
-
-    my $green = Wx::Colour->new("green");
-    $editor->MarkerDefine( MarkCurrent(), Wx::wxSTC_MARK_SMALLRECT, $green, $green );
-
-    $editor->MarkerAdd( $line, MarkCurrent() );
 
     return 1;
 }
