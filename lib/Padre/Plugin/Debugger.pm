@@ -14,6 +14,7 @@ use warnings;
 
 use File::Basename qw(fileparse);
 use File::Spec::Functions qw(catfile);
+use YAML;
 
 use Padre::Wx;
 use Padre::Plugin;
@@ -45,6 +46,7 @@ sub menu_plugins_simple {
         "Breakpoint/Watches..." => [
             "Breakpoint\tShift+Alt+B" => sub { $self->debug_breakpoint },
             "Breakpoint (conditional)\tCtrl+Shift+Alt+B" => sub { $self->debug_breakpoint_cond },
+            "Watch" => sub { $self->debug_watch },
         ],
         "Evaluate expression\tShift+Alt+E" => sub { $self->debug_eval },
     ]
@@ -220,6 +222,30 @@ sub debug_breakpoint_cond {
     $self->debug_breakpoint($cond);
 }
 
+sub debug_watch {
+    my $self = shift;
+    my $ebug = $self->{debugger};
+
+    my $main = Padre->ide->wx->main;
+
+    unless (defined $ebug) {
+        $main->error("Debugger isn't running");
+        return;
+    }
+
+    my $watch = $main->prompt("Watch expression", "Please type expression to watch", "MY_DEBUGGER_WATCH");
+
+    require Padre::Plugin::Debugger::Wx::Watches;
+
+    $self->{watchbox} ||= Padre::Plugin::Debugger::Wx::Watches->new($main);
+    $self->{watches}  ||= {};
+
+    $self->{watches}->{$watch} = $ebug->eval($watch);
+
+    $ebug->watch_point($watch);
+
+    $self->mark_current_line();
+}
 
 # Internal functions
 
@@ -233,6 +259,13 @@ sub mark_current_line {
     my $syntax = Padre->ide->wx->main->syntax;
 
     $editor->goto_line_centerize($line);
+
+    if ($self->{watchbox}) {
+        $self->{watches}->{$_} = $ebug->eval($_) for keys %{ $self->{watches} };
+
+        $self->{watchbox}->clear;
+        $self->{watchbox}->AppendText( YAML::Dump( $self->{watches} ) );
+    }
 
     return 1;
 }
