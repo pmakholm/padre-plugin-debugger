@@ -1,0 +1,30 @@
+Padre-Plugin-Debugger
+=====================
+
+This is a very early pre-release of a perl debugger for padre.
+
+
+INSTALLATION
+============
+
+Padre has to be installed before installing this module.
+To install this module, run the following commands:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+AUTHOR
+======
+
+Peter Makholm, <peter@makholm.net>
+
+
+COPYRIGHT & LICENSE
+===================
+
+Copyright (c) 2009 Peter Makholm, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
