@@ -239,7 +239,7 @@ __END__
 
 =head1 NAME
 
-Padre::Plugin::Debugger - send code on a nopaste website from padre
+Padre::Plugin::Debugger - Debug Perl code from Padre editor
 
 
 
@@ -268,25 +268,11 @@ your bug as I make changes.
 
 =head1 SEE ALSO
 
-Our git repository is located at L<git://github.com/pmakholm/padre-plugin-debugger.git>,
-and can be browsed at L<http://github.com/pmakholm/padre-plugin-debugger/tree/master>.
+L<Devel::ebug> - The backend debugger.
 
+L<http://github.com/pmakholm/padre-plugin-debugger/tree/master> - Git repository
 
-You can also look for information on this module at:
-
-=over 4
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Padre-Plugin-Debugger>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Padre-Plugin-Debugger>
-
-=item * Open bugs
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Padre-Plugin-Debugger>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Padre-Plugin-Debugger> - Bug tracking
 
 =back
 
