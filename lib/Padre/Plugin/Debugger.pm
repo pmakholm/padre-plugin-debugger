@@ -20,7 +20,7 @@ use Padre::Plugin;
 
 use parent qw(Padre::Plugin);
 
-our $VERSION = "0.0_1";
+our $VERSION = "0.0_2";
 
 # -- Padre API, see Padre::Plugin
 
@@ -36,10 +36,13 @@ sub menu_plugins_simple {
         "About" => sub { $self->show_about },
         "Run debugger" => sub { $self->start_debugger },
         "Stop debugger" => sub { $self->stop_debugger },
+        "Continue\tShift+Alt+C" => sub { $self->debug_continue },
         "Step\tShift+Alt+S" => sub { $self->debug_step },
         "Next\tShift+Alt+N" => sub { $self->debug_next },
         "Return\tShift+Alt+R" => sub { $self->debug_return },
         "Eval\tShift+Alt+E" => sub { $self->debug_eval },
+        "Breakpoint\tShift+Alt+B" => sub { $self->debug_breakpoint },
+        "Breakpoint (conditional)\tCtrl+Shift+Alt+B" => sub { $self->debug_breakpoint_cond },
     ]
 }
 
@@ -108,6 +111,20 @@ sub debug_step {
     $self->mark_current_line;
 }
 
+sub debug_continue {
+    my $self = shift;
+    my $ebug = $self->{debugger};
+    my $main = Padre->ide->wx->main;
+
+    unless (defined $ebug) {
+        $main->error("Debugger isn't running");
+        return;
+    }
+
+    $ebug->run;
+    $self->mark_current_line;
+}
+
 sub debug_next {
     my $self = shift;
     my $ebug = $self->{debugger};
@@ -160,9 +177,50 @@ sub debug_eval {
     return 1;
 }
 
+sub debug_breakpoint {
+    my $self = shift;
+    my $cond = shift;
+    my $ebug = $self->{debugger};
+    my $main = Padre->ide->wx->main;
+
+    unless (defined $ebug) {
+        $main->error("Debugger isn't running");
+        return;
+    }
+
+    my $editor = Padre::Current->editor;
+    my $line   = $editor->LineFromPosition($editor->GetCurrentPos);
+    my $break  = $ebug->break_point($line + 1, $cond) - 1;
+
+    # Make marker:
+    my $red    = Wx::Colour->new("red");
+
+    $editor->MarkerDefine( MarkBreakPoint(), Wx::wxSTC_MARK_ARROW, $red, $red );
+    $editor->MarkerAdd( $break, MarkBreakPoint() );
+
+    return 1;
+}
+    
+sub debug_breakpoint_cond {
+    my $self = shift;
+    my $ebug = $self->{debugger};
+    my $main = Padre->ide->wx->main;
+
+    unless (defined $ebug) {
+        $main->error("Debugger isn't running");
+        return;
+    }
+
+    my $cond = $main->prompt("Conditional breakpoint", "Please type condition to break on", "MY_DEBUGGER_BREAK");
+
+    $self->debug_breakpoint($cond);
+}
+
+
 # Internal functions
 
 sub MarkCurrent { 42 };
+sub MarkBreakPoint { 17 }
 
 sub mark_current_line {
     my $self   = shift;
