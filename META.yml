@@ -1,9 +1,9 @@
 ---
 name: Padre-Plugin-Debugger
-version: 0.0_1
+version: 0.1
 author:
   - 'Peter Makholm <peter@makholm.net>'
-abstract: send code on a nopaste website from padre
+abstract: Debug Perl code from Padre editor
 license: perl
 resources:
   license: http://dev.perl.org/licenses/
@@ -14,13 +14,13 @@ requires:
   File::Spec::Functions: 0
   Padre: 0.28
   Padre::Plugin: 0.28
-  Padre::Task: 0.30
+  parent: 0
 build_requires:
   Test::More: 0
 provides:
   Padre::Plugin::Debugger:
     file: lib/Padre/Plugin/Debugger.pm
-    version: 0.0_1
+    version: 0.1
 generated_by: Module::Build version 0.3
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

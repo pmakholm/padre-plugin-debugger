@@ -21,7 +21,7 @@ use Padre::Plugin;
 
 use parent qw(Padre::Plugin);
 
-our $VERSION = "0.0_2";
+our $VERSION = "0.1";
 
 # -- Padre API, see Padre::Plugin
 

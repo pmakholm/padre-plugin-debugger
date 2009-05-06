@@ -26,7 +26,7 @@ my $builder = Padre::PluginBuilder->new(
         'File::Spec::Functions' => 0,
         'Padre'                 => '0.28',
         'Padre::Plugin'         => '0.28',
-	'parrent'		=> 0,
+        'parent'                => 0,
     },
     meta_merge => {
         resources => {

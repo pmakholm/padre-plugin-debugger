@@ -1,12 +1,7 @@
-Revision history for Padre-Plugin-Nopaste
+Revision history for Padre-Plugin-Debugger
 
-0.2.1 Sun Apr  5 12:46:24 CEST 2009
- - adding missing prereq
+0.1     2009-05-06
+    Working debugger for single file debugging.
 
-0.2.0 Wed Apr  1 17:09:04 CEST 2009
- - nopasting in a padre::task in order not to freeze padre
- - new icon to be displayed in padre's plugin manager
- - fixing method name in padre's plugin interface
-
-0.1.0 Tue Mar 24 19:22:20 CET 2009
- - first version: nopaste current selection or file
+0.0_1   2009-05-05
+    Initial very rough version
