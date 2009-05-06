@@ -109,6 +109,7 @@ sub debug_step {
     my $self = shift;
     my $ebug = $self->{debugger};
     my $main = Padre->ide->wx->main;
+    my $file = $main->current->document->filename;
 
     unless (defined $ebug) {
         $main->error("Debugger isn't running");
@@ -116,6 +117,7 @@ sub debug_step {
     }
 
     $ebug->step;
+    $ebug->step until $file eq $ebug->filename;
     $self->update_view;
 }
 
