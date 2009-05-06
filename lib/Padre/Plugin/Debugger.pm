@@ -243,6 +243,7 @@ sub debug_watch {
     $self->{watches}->{$watch} = $ebug->eval($watch);
 
     $ebug->watch_point($watch);
+    $main->bottom->show( $self->{watchbox} );
 
     $self->mark_current_line();
 }
