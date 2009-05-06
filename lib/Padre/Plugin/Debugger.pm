@@ -87,7 +87,7 @@ sub start_debugger {
     $ebug->load;
 
     $self->{debugger} = $ebug;
-    $self->mark_current_line;
+    $self->update_view;
 }
 
 sub stop_debugger {
@@ -99,6 +99,8 @@ sub stop_debugger {
         $main->error("Debugger isn't running");
         return;
     }
+
+    $main->message("Debugger stopped");
 
     delete $self->{debugger};
 }
@@ -114,7 +116,7 @@ sub debug_step {
     }
 
     $ebug->step;
-    $self->mark_current_line;
+    $self->update_view;
 }
 
 sub debug_continue {
@@ -128,7 +130,7 @@ sub debug_continue {
     }
 
     $ebug->run;
-    $self->mark_current_line;
+    $self->update_view;
 }
 
 sub debug_next {
@@ -142,7 +144,7 @@ sub debug_next {
     }
 
     $ebug->next;
-    $self->mark_current_line;
+    $self->update_view;
 }
 
 sub debug_return {
@@ -156,7 +158,7 @@ sub debug_return {
     }
 
     $ebug->return;
-    $self->mark_current_line;
+    $self->update_view;
 }
 
 sub debug_eval {
@@ -241,28 +243,42 @@ sub debug_watch {
     $ebug->watch_point($watch);
     $main->bottom->show( $self->{watchbox} );
 
-    $self->mark_current_line();
+    $self->update_view();
 }
 
 # Internal functions
 
 sub MarkBreakPoint { 17 }
 
-sub mark_current_line {
+sub update_view {
     my $self   = shift;
     my $ebug   = $self->{debugger};
-    my $line   = $ebug->line() - 1;
     my $editor = Padre::Current->editor;
-    my $syntax = Padre->ide->wx->main->syntax;
+    my $main = Padre->ide->wx->main;
+    return unless $ebug;
+    
+    if ( $ebug->finished ) {
+        $self->stop_debugger;
+        return;
+    }
 
+    # Move to current line
+    my $line   = $ebug->line() - 1;
     $editor->goto_line_centerize($line);
 
+    # Update watches
     if ($self->{watchbox}) {
         $self->{watches}->{$_} = $ebug->eval($_) for keys %{ $self->{watches} };
 
         $self->{watchbox}->clear;
         $self->{watchbox}->AppendText( YAML::Dump( $self->{watches} ) );
     }
+
+    # Update output
+    my($stdout, $stderr) = $ebug->output;
+    $main->output->clear;               # We get the full output each time...
+    $main->output->AppendText($stdout);
+    $main->output->AppendText($stderr);
 
     return 1;
 }
