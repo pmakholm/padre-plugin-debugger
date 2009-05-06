@@ -171,14 +171,10 @@ sub debug_eval {
 
     my $eval = $main->prompt("Evaluate in debugger", "Please type expression to evaluate", "MY_DEBUGGER_EVAL");
 
-    print STDERR "Debugger going to evaluate: $eval\n";
-
     if ($eval) {
         my $yaml = $ebug->yaml($eval);
-        print STDERR $yaml;
+        $main->message($yaml, "Result");
     }
-
-    print STDERR "...\n";
 
     return 1;
 }
