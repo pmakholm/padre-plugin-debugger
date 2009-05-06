@@ -1,6 +1,7 @@
 Build.PL
 Changes
 lib/Padre/Plugin/Debugger.pm
+lib/Padre/Plugin/Debugger/Wx/Watches.pm
 LICENSE
 MANIFEST			This list of files
 META.yml

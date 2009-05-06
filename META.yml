@@ -21,6 +21,8 @@ provides:
   Padre::Plugin::Debugger:
     file: lib/Padre/Plugin/Debugger.pm
     version: 0.1
+  Padre::Plugin::Debugger::Wx::Watches:
+    file: lib/Padre/Plugin/Debugger/Wx/Watches.pm
 generated_by: Module::Build version 0.3
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
