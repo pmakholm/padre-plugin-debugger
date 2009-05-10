@@ -177,7 +177,6 @@ sub debug_eval {
         my $yaml = $ebug->yaml($eval);
         $main->message($yaml, "Result");
     }
-
     return 1;
 }
 
@@ -186,6 +185,9 @@ sub debug_breakpoint {
     my $cond = shift;
     my $ebug = $self->{debugger};
     my $main = Padre->ide->wx->main;
+    my $file = $main->current->document->filename;
+
+    $file = $self->resolve_file( $file );
 
     unless (defined $ebug) {
         $main->error("Debugger isn't running");
@@ -194,7 +196,7 @@ sub debug_breakpoint {
 
     my $editor = Padre::Current->editor;
     my $line   = $editor->LineFromPosition($editor->GetCurrentPos);
-    my $break  = $ebug->break_point($main->current->document->filename, $line + 1, $cond) - 1;
+    my $break  = $ebug->break_point($file, $line + 1, $cond) - 1;
 
     # Make marker:
     my $red    = Wx::Colour->new("red");
@@ -202,7 +204,6 @@ sub debug_breakpoint {
     $editor->MarkerDefine( MarkBreakPoint(), Wx::wxSTC_MARK_ARROW, $red, $red );
     $editor->MarkerAdd( $break, MarkBreakPoint() );
 
-    print Dump [ $ebug->all_break_points_with_condition ];
     return 1;
 }
     
@@ -251,6 +252,17 @@ sub debug_watch {
 
 sub MarkBreakPoint { 17 }
 
+sub resolve_file {
+    my $self = shift;
+    my $file = shift;
+    my $ebug = $self->{debugger};
+
+    my $base  = $ebug->eval("require Cwd; Cwd::cwd;");
+    my %known = map { rel2abs($_, $base) => $_ } $ebug->filenames;
+
+    return $known{$file};
+}
+
 sub update_view {
     my $self   = shift;
     my $ebug   = $self->{debugger};
@@ -269,6 +281,7 @@ sub update_view {
 	return unless defined $id; # Autoload files?
 
 	$main->on_nth_pane($id);
+        $editor = Padre::Current->editor;
     }
 
     # Move to current line
