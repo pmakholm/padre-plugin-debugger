@@ -1,0 +1,29 @@
+Wishlist
+========
+
+This is a list of features missing in other modules. Not all of them is
+reported as wishlist bugs for these modules. 
+
+Padre
+-----
+
+ - API for adding entries to right click menu in editor (ticket #321).
+
+   Would be nice to add 'Add breakpoint' and 'Continue to this line' entries
+   to the right click menu.
+
+
+Devel::ebug
+-----------
+
+  - Flushable output command.
+
+    It would be nice to only get output from the debugged process once. At the
+    moment the ->output method returns the complete output of for the lifetime
+    of the process. 
+
+  - Configurable commandline for backend.
+
+    I need some control of @INC in the backend process. I the moment I have no
+    direct way of controling that.
+
