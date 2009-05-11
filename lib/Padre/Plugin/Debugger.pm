@@ -49,6 +49,7 @@ sub menu_plugins_simple {
             "Watch" => sub { $self->debug_watch },
         ],
         "Evaluate expression\tShift+Alt+E" => sub { $self->debug_eval },
+        "Show stacktrace" => sub { $self->show_stacktrace },
     ]
 }
 
@@ -248,6 +249,47 @@ sub debug_watch {
     $self->update_view();
 }
 
+sub show_stacktrace {
+    my $self = shift;
+    my $ebug = $self->{debugger};
+
+    my $main = Padre->ide->wx->main;
+
+    unless (defined $ebug) {
+        $main->error("Debugger isn't running");
+        return;
+    }
+
+    require Padre::Plugin::Debugger::Wx::StackTrace;
+
+    $self->{stacktrace} ||= Padre::Plugin::Debugger::Wx::StackTrace->new($main);
+    $self->{stacktrace}->set_debugger($self);
+
+    $main->right->show( $self->{stacktrace} );
+
+    $self->update_view();
+}
+
+sub goto_frame {
+    my $self = shift;
+    my $line = shift;
+
+    my @stack = $self->{debugger}->stack_trace;
+    my $frame = $stack[$line];
+print STDERR YAML::Dump { stack => \@stack, line => $line };
+    my $main = Padre->ide->wx->main;
+    my $id   = $main->find_editor_of_file( $frame->filename );
+    unless ( defined $id ) {
+        $main->error("File not loaded");
+        return;
+    }
+
+    $main->on_nth_pane($id);
+    Padre::Current->editor->goto_line_centerize($frame->line - 1);
+
+    return 1;
+}
+
 # Internal functions
 
 sub MarkBreakPoint { 17 }
@@ -294,6 +336,18 @@ sub update_view {
 
         $self->{watchbox}->clear;
         $self->{watchbox}->AppendText( YAML::Dump( $self->{watches} ) );
+    }
+
+    # Update stack trace
+    if ($self->{stacktrace}) {
+        $self->{stacktrace}->DeleteAllItems;
+
+        my @stack = $ebug->stack_trace;
+
+        $self->{stacktrace}->InsertStringItem( 0, $_->filename. "::" .  $_->line)
+            for reverse @stack;
+        
+        $self->{stacktrace}->SetColumnWidth( 0, Wx::wxLIST_AUTOSIZE );
     }
 
     # Update output
