@@ -276,12 +276,19 @@ sub goto_frame {
 
     my @stack = $self->{debugger}->stack_trace;
     my $frame = $stack[$line];
-print STDERR YAML::Dump { stack => \@stack, line => $line };
+
     my $main = Padre->ide->wx->main;
     my $id   = $main->find_editor_of_file( $frame->filename );
     unless ( defined $id ) {
-        $main->error("File not loaded");
-        return;
+        my $load = Wx::MessageBox(
+	    "Unknown file, Should I load it?",
+            "Padre", 
+            Wx::wxYES_NO | Wx::wxCENTRE, 
+            $main
+        );
+        return if $load == Wx::wxNO;
+
+        $id = $main->setup_editor( $frame->filename );
     }
 
     $main->on_nth_pane($id);
