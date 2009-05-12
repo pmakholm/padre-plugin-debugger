@@ -1,6 +1,6 @@
 ---
 name: Padre-Plugin-Debugger
-version: 0.1
+version: 0.2
 author:
   - 'Peter Makholm <peter@makholm.net>'
 abstract: Debug Perl code from Padre editor
@@ -20,10 +20,10 @@ build_requires:
 provides:
   Padre::Plugin::Debugger:
     file: lib/Padre/Plugin/Debugger.pm
-    version: 0.1
+    version: 0.2
   Padre::Plugin::Debugger::Wx::Watches:
     file: lib/Padre/Plugin/Debugger/Wx/Watches.pm
-generated_by: Module::Build version 0.3
+generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2

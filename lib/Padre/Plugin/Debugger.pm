@@ -21,7 +21,7 @@ use Padre::Plugin;
 
 use parent qw(Padre::Plugin);
 
-our $VERSION = "0.1";
+our $VERSION = "0.2";
 
 # -- Padre API, see Padre::Plugin
 
@@ -62,7 +62,7 @@ sub show_about {
     my $about = Wx::AboutDialogInfo->new;
     $about->SetName("Padre::Plugin::Debugger");
     $about->SetDescription( <<"END_MESSAGE" );
-Initial debugger plugin for Padre
+Padre Perl5 Debugger
 END_MESSAGE
     $about->SetVersion( $VERSION );
 
