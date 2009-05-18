@@ -19,6 +19,8 @@ use YAML;
 use Padre::Wx;
 use Padre::Plugin;
 
+use Padre::Plugin::Debugger::Wx::Menu;
+
 use parent qw(Padre::Plugin);
 
 our $VERSION = "0.2";
@@ -31,29 +33,23 @@ sub padre_interfaces {
     "Padre::Plugin" => 0.28,
 }
 
-sub menu_plugins_simple {
+sub menu_plugins {
     my $self = shift;
-    return $self->plugin_name => [
-        "About" => sub { $self->show_about },
-        "Start debugger" => sub { $self->start_debugger },
-        "Stop debugger" => sub { $self->stop_debugger },
-        "Running code..." => [
-            "Continue\tShift+Alt+C" => sub { $self->debug_continue },
-            "Step\tShift+Alt+S" => sub { $self->debug_step },
-            "Next\tShift+Alt+N" => sub { $self->debug_next },
-            "Return\tShift+Alt+R" => sub { $self->debug_return },
-        ],
-        "Breakpoint/Watches..." => [
-            "Breakpoint\tShift+Alt+B" => sub { $self->debug_breakpoint },
-            "Breakpoint (conditional)\tCtrl+Shift+Alt+B" => sub { $self->debug_breakpoint_cond },
-            "Watch" => sub { $self->debug_watch },
-        ],
-        "Evaluate expression\tShift+Alt+E" => sub { $self->debug_eval },
-        "Show stacktrace" => sub { $self->show_stacktrace },
-    ]
+    my $main = shift;
+
+    $self->{menu} = Padre::Plugin::Debugger::Wx::Menu->new($main,$self);
+    $self->{menu}->refresh();
+
+    return ( $self->plugin_name => $self->{menu}->wx );
 }
 
 # Public functions
+
+sub is_running {
+    my $self = shift;
+
+    return exists $self->{debugger};
+}
 
 sub show_about {
     my $self = shift;
@@ -321,6 +317,7 @@ sub update_view {
     
     if ( $ebug->finished ) {
         $self->stop_debugger;
+        $self->{menu}->refresh();
         return 1;
     }
 
@@ -362,6 +359,9 @@ sub update_view {
     $main->output->clear;               # We get the full output each time...
     $main->output->AppendText($stdout);
     $main->output->AppendText($stderr);
+
+    # Refresh menu
+    $self->{menu}->refresh();
 
     return 1;
 }
