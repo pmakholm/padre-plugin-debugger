@@ -10,9 +10,15 @@
 use strict;
 use warnings;
 
-use Padre::PluginBuilder;
+use Module::Build;
+my $BuildClass = "Module::Build";
 
-my $builder = Padre::PluginBuilder->new(
+eval {
+    require Padre::PluginBuilder;
+    $BuildClass = "Padre::PluginBuilder";
+};
+
+my $builder = $BuildClass->new(
     module_name         => 'Padre::Plugin::Debugger',
     license             => 'perl',
     dist_author         => 'Peter Makholm <peter@makholm.net>',
