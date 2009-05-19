@@ -37,10 +37,25 @@ sub menu_plugins {
     my $self = shift;
     my $main = shift;
 
-    $self->{menu} = Padre::Plugin::Debugger::Wx::Menu->new($main,$self);
+    $self->{menu} ||= Padre::Plugin::Debugger::Wx::Menu->new($main,$self);
     $self->{menu}->refresh();
 
     return ( $self->plugin_name => $self->{menu}->wx );
+}
+
+sub plugin_enable {
+    my $self = shift;
+    my $main = Padre->ide->wx->main;
+
+    $self->{config} = $self->config_read() || {};
+
+    $self->{menu} ||= Padre::Plugin::Debugger::Wx::Menu->new($main,$self);
+    $self->{menu}->refresh();
+
+    $self->show_stacktrace( $self->{config}->{stacktrace} );
+    $self->show_watches( $self->{config}->{watchbox} );
+
+    return 1;
 }
 
 # Public functions
@@ -232,38 +247,71 @@ sub debug_watch {
 
     my $watch = $main->prompt("Watch expression", "Please type expression to watch", "MY_DEBUGGER_WATCH");
 
-    require Padre::Plugin::Debugger::Wx::Watches;
-
-    $self->{watchbox} ||= Padre::Plugin::Debugger::Wx::Watches->new($main);
-    $self->{watches}  ||= {};
-
     $self->{watches}->{$watch} = $ebug->eval($watch);
-
     $ebug->watch_point($watch);
-    $main->bottom->show( $self->{watchbox} );
 
     $self->update_view();
 }
 
-sub show_stacktrace {
+sub show_watches {
     my $self = shift;
-    my $ebug = $self->{debugger};
-
+    my $on   = @_ ? $_[0] ? 1 : 0 : 1;
     my $main = Padre->ide->wx->main;
 
-    unless (defined $ebug) {
-        $main->error("Debugger isn't running");
-        return;
+    # Create pane
+    require Padre::Plugin::Debugger::Wx::Watches;
+    $self->{watchbox} ||=
+        Padre::Plugin::Debugger::Wx::Watches->new($main);
+    $self->{watchbox}->set_debugger($self);
+
+    # Update view
+    unless ( $on == $self->{menu}->{view_watches}->IsChecked ) {
+        $self->{menu}->{view_watches}->Check($on);
+    }
+    $self->{config}->{watchbox} = $on;
+
+    if ($on) {
+        $main->bottom->show( $self->{watchbox} );
+    } else {
+        $main->bottom->hide( $self->{watchbox} );
     }
 
-    require Padre::Plugin::Debugger::Wx::StackTrace;
+    $main->aui->Update;
 
-    $self->{stacktrace} ||= Padre::Plugin::Debugger::Wx::StackTrace->new($main);
+    $self->config_write( $self->{config} );
+    $self->update_view() if $self->is_running;
+
+    return 1;
+}
+sub show_stacktrace {
+    my $self = shift;
+    my $on   = @_ ? $_[0] ? 1 : 0 : 1;
+    my $main = Padre->ide->wx->main;
+
+    # Create pane
+    require Padre::Plugin::Debugger::Wx::StackTrace;
+    $self->{stacktrace} ||=
+        Padre::Plugin::Debugger::Wx::StackTrace->new($main);
     $self->{stacktrace}->set_debugger($self);
 
-    $main->right->show( $self->{stacktrace} );
+    # Update view
+    unless ( $on == $self->{menu}->{view_stacktrace}->IsChecked ) {
+        $self->{menu}->{view_stacktrace}->Check($on);
+    }
+    $self->{config}->{stacktrace} = $on;
 
-    $self->update_view();
+    if ($on) {
+        $main->right->show( $self->{stacktrace} );
+    } else {
+        $main->right->hide( $self->{stacktrace} );
+    }
+
+    $main->aui->Update;
+
+    $self->config_write( $self->{config} );
+    $self->update_view() if $self->is_running;
+
+    return 1;
 }
 
 sub goto_frame {
