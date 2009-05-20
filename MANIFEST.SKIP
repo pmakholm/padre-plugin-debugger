@@ -1,0 +1,9 @@
+^_build
+^Build$
+^blib
+~$
+\.bak$
+\.par$
+^MANIFEST\.SKIP$
+\.tar\.gz$
+.git

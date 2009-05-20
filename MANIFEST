@@ -1,9 +1,13 @@
 Build.PL
 Changes
+lib/Devel/ebug/Padre.pm
 lib/Padre/Plugin/Debugger.pm
+lib/Padre/Plugin/Debugger/Wx/Menu.pm
+lib/Padre/Plugin/Debugger/Wx/StackTrace.pm
 lib/Padre/Plugin/Debugger/Wx/Watches.pm
 LICENSE
-MANIFEST			This list of files
+MANIFEST
 META.yml
 README
 t/0-load.t
+WISHLIST
