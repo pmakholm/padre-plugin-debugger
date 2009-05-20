@@ -227,7 +227,7 @@ sub debug_breakpoint {
     my $main = Padre->ide->wx->main;
     my $file = $main->current->document->filename;
 
-    $file = $self->resolve_file( $file );
+    $file = $self->ebug_filename( $file );
 
     unless (defined $ebug) {
         $main->error("Debugger isn't running");
@@ -348,9 +348,10 @@ sub goto_frame {
 
     my @stack = $self->{debugger}->stack_trace;
     my $frame = $stack[$line];
+    my $file  = $self->padre_filename( $frame->filename );
 
     my $main = Padre->ide->wx->main;
-    my $id   = $main->find_editor_of_file( $frame->filename );
+    my $id   = $main->find_editor_of_file( $file );
     unless ( defined $id ) {
         my $load = Wx::MessageBox(
 	    "Unknown file, Should I load it?",
@@ -360,7 +361,7 @@ sub goto_frame {
         );
         return if $load == Wx::wxNO;
 
-        $id = $main->setup_editor( $frame->filename );
+        $id = $main->setup_editor( $file );
     }
 
     $main->on_nth_pane($id);
@@ -373,13 +374,24 @@ sub goto_frame {
 
 sub MarkBreakPoint { 17 }
 
-sub resolve_file {
+sub ebug_filename {
     my $self = shift;
     my $file = shift;
     my $ebug = $self->{debugger};
 
     my $base  = $ebug->eval("require Cwd; Cwd::cwd;");
     my %known = map { rel2abs($_, $base) => $_ } $ebug->filenames;
+
+    return $known{$file};
+}
+
+sub padre_filename {
+    my $self = shift;
+    my $file = shift;
+    my $ebug = $self->{debugger};
+
+    my $base  = $ebug->eval("require Cwd; Cwd::cwd;");
+    my %known = map { $_ => rel2abs($_, $base) } $ebug->filenames;
 
     return $known{$file};
 }
@@ -397,9 +409,11 @@ sub update_view {
         return 1;
     }
 
+
     # Try to change to right file
-    if ( $main->current->document->filename ne $ebug->filename ) {
-        my $id = $main->find_editor_of_file( $ebug->filename );
+    my $file = $self->padre_filename( $ebug->filename );
+    if ( $main->current->document->filename ne $file ) {
+        my $id = $main->find_editor_of_file( $file );
 	return unless defined $id; # Autoload files?
 
 	$main->on_nth_pane($id);
