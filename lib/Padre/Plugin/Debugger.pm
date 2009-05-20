@@ -93,9 +93,37 @@ sub start_debugger {
         return;
     }
 
-    require Devel::ebug;
-    my $ebug = Devel::ebug->new();
-    $ebug->program($doc->filename);
+    # Copied from Document/Perl.pm
+    my $config = Padre->ide->config;
+
+    # Run with the same Perl that launched Padre
+    # TODO: get preferred Perl from configuration
+    my $file = $doc->filename;
+    my $perl = Padre->perl_interpreter;
+
+    # Set default arguments
+    my %run_args = (
+        interpreter => $config->run_interpreter_args_default,
+        script      => $config->run_script_args_default,
+    );
+
+    # Overwrite default arguments with the ones preferred for given document
+    foreach my $arg ( keys %run_args ) {
+        my $type = "run_${arg}_args_" . File::Basename::fileparse($file);
+        $run_args{$arg} = Padre::DB::History->previous($type) if Padre::DB::History->previous($type);
+    }
+
+    my $dir = File::Basename::dirname($file);
+    chdir $dir;
+    
+    require Devel::ebug::Padre;
+    my $ebug = Devel::ebug::Padre->new();
+
+    $ebug->interpreter($perl);
+    $ebug->interpreter_args($run_args{interpreter});
+    $ebug->program($file);
+    $ebug->program_args($run_args{script});
+
     $ebug->load;
 
     $self->{debugger} = $ebug;
