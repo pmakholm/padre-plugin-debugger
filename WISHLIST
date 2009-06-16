@@ -10,7 +10,7 @@ Padre
  - API for adding entries to right click menu in editor (ticket #321).
 
    Would be nice to add 'Add breakpoint' and 'Continue to this line' entries
-   to the right click menu.
+   to the right click menu. Fixed, but I'm not using it yet.
 
 
 Devel::ebug
@@ -25,5 +25,5 @@ Devel::ebug
   - Configurable commandline for backend.
 
     I need some control of @INC in the backend process. I the moment I have no
-    direct way of controling that.
+    direct way of controling that. Fixed by subclassing Devel::ebug.
 

@@ -23,7 +23,7 @@ use Padre::Plugin::Debugger::Wx::Menu;
 
 use parent qw(Padre::Plugin);
 
-our $VERSION = "0.2";
+our $VERSION = "0.3";
 
 # -- Padre API, see Padre::Plugin
 

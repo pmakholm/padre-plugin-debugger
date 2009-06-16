@@ -1,5 +1,14 @@
 Revision history for Padre-Plugin-Debugger
 
+0.3     2009-06-12
+       Call the interpreter according to the documents 'Run Parameters' from
+       Edit -> Preferences -> Run Parameters.
+       Reordered the menu.
+       A lot of other minor details.
+
+0.2     2009-05-12
+    Forgot to write a changelog,
+
 0.1     2009-05-06
     Working debugger for single file debugging.
 
