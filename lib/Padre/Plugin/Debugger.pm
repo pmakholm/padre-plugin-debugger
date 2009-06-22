@@ -497,10 +497,6 @@ L<http://github.com/pmakholm/padre-plugin-debugger/tree/master> - Git repository
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Padre-Plugin-Debugger> - Bug tracking
 
-=back
-
-
-
 =head1 AUTHOR
 
 Peter Makholm, C<< <peter@makholm.net> >>
