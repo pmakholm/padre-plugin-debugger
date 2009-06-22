@@ -15,6 +15,7 @@ requires:
   Padre: 0.28
   Padre::Plugin: 0.28
   parent: 0
+  YAML: 0
 build_requires:
   Test::More: 0
 provides:
